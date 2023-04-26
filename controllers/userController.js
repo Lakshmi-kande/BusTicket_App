@@ -1,6 +1,7 @@
 const asyncHandler = require('express-async-handler');
 const bcrypt = require ('bcrypt');
 const user = require('../model/user');
+const { constants } = require('../constants');
 
 
 // desc Register a user
@@ -9,11 +10,11 @@ const user = require('../model/user');
 const registerUser = asyncHandler(async(req,res)=>{
     const {name, email, password, mobile, gender, role} = req.body;
     if(!name || !email || !password || !mobile || !gender){
-        return res.status(400).json({ message: 'All feilds are mandatory' });
+        return res.status(constants.VALIDATION_ERROR).json({ message: 'All feilds are mandatory' });
     }
     const userAvailable = await user.findOne({ email });
     if (userAvailable){
-        return res.status(400).json({ message: 'you already registered' });
+        return res.status(constants.VALIDATION_ERROR).json({ message: 'you already registered' });
     }
     // Encrypt password
     const salt = await bcrypt.genSalt(10);
@@ -29,7 +30,7 @@ const registerUser = asyncHandler(async(req,res)=>{
         role
     });
 
-    res.status(201).json(newUser);
+    res.status(constants.SUCCESSFULL_POST).json(newUser);
 });
 
 
@@ -40,29 +41,29 @@ const registerUser = asyncHandler(async(req,res)=>{
 const loginUser = asyncHandler(async (req, res) => {
     const { email, password } = req.body;
     if (!email || !password) {
-        res.status(400);
+        res.status(constants.VALIDATION_ERROR);
         throw new Error('All fields are mandatory!');
     }
 
     const User = await user.findOne({ email });
     if (!User) {
-        return res.status(401).json({ message: 'Invalid email or password' });
+        return res.status(constants.UNATHORIZED).json({ message: 'Invalid email or password' });
     }
 
     const isMatch = await bcrypt.compare(password, User.password);
     if (!isMatch) {
-        return res.status(401).json({ message: 'Invalid email or password' });
+        return res.status(constants.UNATHORIZED).json({ message: 'Invalid email or password' });
     }
 
-    res.status(200).json({ message: 'Login successful' });
+    res.status(constants.SUCCESSFULL_REQUEST).json({ message: 'Login successful' });
 
     // Check user role and perform actions accordingly
     if (User.role === 'admin') {
         // Admin actions
-        res.status(200).json({ message: 'Login successful - Admin' });
+        res.status(constants.SUCCESSFULL_REQUEST).json({ message: 'Login successful - Admin' });
     } else {
     // Normal user actions
-        res.status(200).json({ message: 'Login successful - Normal user' });
+        res.status(constants.SUCCESSFULL_REQUEST).json({ message: 'Login successful - Normal user' });
     }
 });
 

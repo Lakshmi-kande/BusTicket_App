@@ -1,12 +1,13 @@
 const asyncHandler = require('express-async-handler');
 const busDetails = require('../model/bus');
+const { constants } = require('../constants');
 
 //@desc Get all bus list
 //@route GET /api/busesList
 //@access private
 const getAllBusList = asyncHandler(async (req, res) => {
     const busesList = await busDetails.find({ busId: req.bus.id });
-    res.status(200).json(busesList);
+    res.status(constants.SUCCESSFULL_REQUEST).json(busesList);
 });
 
 //@desc Create New Bus Details
@@ -23,7 +24,7 @@ const createBusDetails = asyncHandler(async (req, res) => {
         availableSeats
     } = req.body;
     if ( !busNum || !busType || !startCity || !destination ||! totalSeats || !availableSeats ) {
-        res.status(400);
+        res.status(constants.VALIDATION_ERROR);
         throw new Error('All fields are mandatory !');
     }
     const busList = await busDetails.create({
@@ -36,7 +37,7 @@ const createBusDetails = asyncHandler(async (req, res) => {
         bus_id: req.bus.id
     });
 
-    res.status(201).json(busList);
+    res.status(constants.SUCCESSFULL_POST).json(busList);
 });
 
 //@desc Get bus details
@@ -45,10 +46,10 @@ const createBusDetails = asyncHandler(async (req, res) => {
 const getBusDetails = asyncHandler(async (req, res) => {
     const busList = await busDetails.findById(req.params.id);
     if (!busList) {
-        res.status(404);
+        res.status(constants.NOT_FOUND);
         throw new Error('Bus details not found');
     }
-    res.status(200).json(busList);
+    res.status(constants.SUCCESSFULL_REQUEST).json(busList);
 });
 
 //@desc update bus details
@@ -57,12 +58,12 @@ const getBusDetails = asyncHandler(async (req, res) => {
 const updateBusDetails = asyncHandler(async (req, res) => {
     const busList = await busDetails.findById(req.params.id);
     if (!busList) {
-        res.status(404);
+        res.status(constants.NOT_FOUND);
         throw new Error('Bus details not found');
     }
 
     if (busList.busId.toString() !== req.user.id) {
-        res.status(403);
+        res.status(constants.FORBIDDEN);
         throw new Error('User dont have permission to update the bus details');
     }
 
@@ -72,7 +73,7 @@ const updateBusDetails = asyncHandler(async (req, res) => {
         { new: true }
     );
 
-    res.status(200).json(updatedBusDetails);
+    res.status(constants.SUCCESSFULL_REQUEST).json(updatedBusDetails);
 });
 
 //@desc delete bus details
@@ -81,15 +82,15 @@ const updateBusDetails = asyncHandler(async (req, res) => {
 const deleteBusDetails = asyncHandler(async (req, res) => {
     const busList = await busDetails.findById(req.params.id);
     if (!busList) {
-        res.status(404);
+        res.status(constants.NOT_FOUND);
         throw new Error('bus details not found');
     }
     if (busList.busId.toString() !== req.user.id) {
-        res.status(403);
+        res.status(constants.FORBIDDEN);
         throw new Error('User dont have permission to delete bus details');
     }
     await busDetails.deleteOne({ _id: req.params.id });
-    res.status(200).json(busList);
+    res.status(constants.SUCCESSFULL_REQUEST).json(busList);
 });
 
 module.exports = {

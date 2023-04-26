@@ -1,10 +1,3 @@
-// const mongoose = require('mongoose');
-// mongoose.connect(process.env.connect_URL,{
-//     useNewUrlParser: true,
-// }).then(() => {
-//     console.log('connected Database');
-// });
-
 const mongoose = require ('mongoose');
 const connectDb = async() => {
     try {
