@@ -55,8 +55,6 @@ const loginUser = asyncHandler(async (req, res) => {
         return res.status(constants.UNATHORIZED).json({ message: 'Invalid email or password' });
     }
 
-    res.status(constants.SUCCESSFULL_REQUEST).json({ message: 'Login successful' });
-
     // Check user role and perform actions accordingly
     if (User.role === 'admin') {
         // Admin actions

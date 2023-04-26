@@ -6,7 +6,7 @@ const { constants } = require('../constants');
 //@route GET /api/busesList
 //@access private
 const getAllBusList = asyncHandler(async (req, res) => {
-    const busesList = await busDetails.find({ busId: req.bus.id });
+    const busesList = await busDetails.find({ busId: req.body.id });
     res.status(constants.SUCCESSFULL_REQUEST).json(busesList);
 });
 
@@ -14,83 +14,99 @@ const getAllBusList = asyncHandler(async (req, res) => {
 //@route POST /api/busesList
 //@access private
 const createBusDetails = asyncHandler(async (req, res) => {
-    console.log('The request body is :', req.body);
-    const { 
+    const {
         busNum,
-        busType, 
-        startCity, 
-        destination, 
-        totalSeats, 
+        busType,
+        startCity,
+        destination,
+        totalSeats,
         availableSeats
     } = req.body;
-    if ( !busNum || !busType || !startCity || !destination ||! totalSeats || !availableSeats ) {
-        res.status(constants.VALIDATION_ERROR);
-        throw new Error('All fields are mandatory !');
+
+    if ( !busNum || !busType || !startCity || !destination || !totalSeats || !availableSeats) {
+        throw new Error(constants.VALIDATION_ERROR);
     }
-    const busList = await busDetails.create({
+
+    const bus = new busDetails({
         busNum,
-        busType, 
-        startCity, 
-        destination, 
-        totalSeats, 
+        busType,
+        startCity,
+        destination,
+        totalSeats,
         availableSeats,
-        bus_id: req.bus.id
+        busId: req.body.id
     });
 
-    res.status(constants.SUCCESSFULL_POST).json(busList);
+    await bus.save();
+
+    res.status(constants.SUCCESSFULL_POST).json(bus);
 });
 
 //@desc Get bus details
 //@route GET /api/busesList/:id
 //@access private
 const getBusDetails = asyncHandler(async (req, res) => {
-    const busList = await busDetails.findById(req.params.id);
-    if (!busList) {
-        res.status(constants.NOT_FOUND);
-        throw new Error('Bus details not found');
+    const bus = await busDetails.findById(req.params.id);
+
+    if (!bus) {
+        throw new Error(constants.NOT_FOUND);
     }
-    res.status(constants.SUCCESSFULL_REQUEST).json(busList);
+
+    res.status(constants.SUCCESSFULL_REQUEST).json(bus);
 });
 
 //@desc update bus details
 //@route PUT /api/busesList/:id
 //@access private
 const updateBusDetails = asyncHandler(async (req, res) => {
-    const busList = await busDetails.findById(req.params.id);
-    if (!busList) {
-        res.status(constants.NOT_FOUND);
-        throw new Error('Bus details not found');
+    const {
+        busNum,
+        busType,
+        startCity,
+        destination,
+        totalSeats,
+        availableSeats
+    } = req.body;
+
+    const bus = await busDetails.findById(req.params.id);
+
+    if (!bus) {
+        throw new Error(constants.NOT_FOUND);
     }
 
-    if (busList.busId.toString() !== req.user.id) {
-        res.status(constants.FORBIDDEN);
-        throw new Error('User dont have permission to update the bus details');
+    if (req.user.role !== 'admin') {
+        throw new Error(constants.FORBIDDEN);
     }
 
-    const updatedBusDetails = await busList.findByIdAndUpdate(
-        req.params.id,
-        req.body,
-        { new: true }
-    );
+    bus.busNum = busNum || bus.busNum;
+    bus.busType = busType || bus.busType;
+    bus.startCity = startCity || bus.startCity;
+    bus.destination = destination || bus.destination;
+    bus.totalSeats = totalSeats || bus.totalSeats;
+    bus.availableSeats = availableSeats || bus.availableSeats;
 
-    res.status(constants.SUCCESSFULL_REQUEST).json(updatedBusDetails);
+    await bus.save();
+
+    res.status(constants.SUCCESSFULL_REQUEST).json(bus);
 });
 
 //@desc delete bus details
 //@route DELETE /api/busesList/:id
 //@access private
 const deleteBusDetails = asyncHandler(async (req, res) => {
-    const busList = await busDetails.findById(req.params.id);
-    if (!busList) {
-        res.status(constants.NOT_FOUND);
-        throw new Error('bus details not found');
+    const bus = await busDetails.findById(req.params.id);
+
+    if (!bus) {
+        throw new Error(constants.NOT_FOUND);
     }
-    if (busList.busId.toString() !== req.user.id) {
-        res.status(constants.FORBIDDEN);
-        throw new Error('User dont have permission to delete bus details');
+
+    if (req.user.role !== 'admin') {
+        throw new Error(constants.FORBIDDEN);
     }
-    await busDetails.deleteOne({ _id: req.params.id });
-    res.status(constants.SUCCESSFULL_REQUEST).json(busList);
+
+    await bus.deleteOne({ _id: req.params.id });
+
+    res.status(constants.SUCCESSFULL_REQUEST).json({message:'delete successfully'});
 });
 
 module.exports = {
