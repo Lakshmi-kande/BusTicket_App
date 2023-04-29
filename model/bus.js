@@ -1,11 +1,6 @@
 const mongoose = require('mongoose');
 
 const busSchema = mongoose.Schema({
-    busId:{
-        type: mongoose.Schema.Types.ObjectId,
-        required: true,
-        ref: 'user'
-    },
     busNum: {
         type: String, 
         required: true 

@@ -3,7 +3,6 @@ const bcrypt = require ('bcrypt');
 const user = require('../model/user');
 const { constants } = require('../constants');
 
-
 // desc Register a user
 // route POST/api/users/register
 // access public

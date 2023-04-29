@@ -6,7 +6,7 @@ const { constants } = require('../constants');
 //@route GET /api/busesList
 //@access private
 const getAllBusList = asyncHandler(async (req, res) => {
-    const busesList = await busDetails.find({ busId: req.body.id });
+    const busesList = await busDetails.find({});
     res.status(constants.SUCCESSFULL_REQUEST).json(busesList);
 });
 
@@ -58,36 +58,20 @@ const getBusDetails = asyncHandler(async (req, res) => {
 //@desc update bus details
 //@route PUT /api/busesList/:id
 //@access private
-const updateBusDetails = asyncHandler(async (req, res) => {
-    const {
-        busNum,
-        busType,
-        startCity,
-        destination,
-        totalSeats,
-        availableSeats
-    } = req.body;
-
+const updateBusDetails = asyncHandler(async (req, res) => { 
     const bus = await busDetails.findById(req.params.id);
 
     if (!bus) {
         throw new Error(constants.NOT_FOUND);
     }
 
-    if (req.user.role !== 'admin') {
-        throw new Error(constants.FORBIDDEN);
-    }
+    const updatedBusDetails = await busDetails.findByIdAndUpdate(
+        req.params.id,
+        req.body,
+        {new:true}
+    );
 
-    bus.busNum = busNum || bus.busNum;
-    bus.busType = busType || bus.busType;
-    bus.startCity = startCity || bus.startCity;
-    bus.destination = destination || bus.destination;
-    bus.totalSeats = totalSeats || bus.totalSeats;
-    bus.availableSeats = availableSeats || bus.availableSeats;
-
-    await bus.save();
-
-    res.status(constants.SUCCESSFULL_REQUEST).json(bus);
+    res.status(constants.SUCCESSFULL_REQUEST).json(updatedBusDetails);
 });
 
 //@desc delete bus details
@@ -100,13 +84,9 @@ const deleteBusDetails = asyncHandler(async (req, res) => {
         throw new Error(constants.NOT_FOUND);
     }
 
-    if (req.user.role !== 'admin') {
-        throw new Error(constants.FORBIDDEN);
-    }
-
     await bus.deleteOne({ _id: req.params.id });
 
-    res.status(constants.SUCCESSFULL_REQUEST).json({message:'delete successfully'});
+    res.status(constants.SUCCESSFULL_REQUEST).json({message:'deleted successfully'});
 });
 
 module.exports = {
