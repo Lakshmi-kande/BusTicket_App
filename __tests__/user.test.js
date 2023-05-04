@@ -96,10 +96,6 @@ describe('registerUser', () => {
 });
 
 
-
-
-
-
 describe('loginUser function', () => {
     beforeEach(() => {
         jest.clearAllMocks();
@@ -156,7 +152,7 @@ describe('loginUser function', () => {
     const mockUser = {
         _id: '123',
         email: 'test@example.com',
-        password: '$2b$10$ZfS/NjK0aCTpF4/lkL68Jux2D.Ug4l4cm2hXJvTo28ZtoFq3zA3yi', // hashed "password"
+        password: '123456', // hashed "password"
         role: 'user'
     };
     user.findOne.mockResolvedValue(mockUser);
@@ -184,7 +180,7 @@ describe('loginUser function', () => {
     const mockUser = {
         _id: '123',
         email: 'admin@example.com',
-        password: '$2b$10$ZfS/NjK0aCTpF4/lkL68Jux2D.Ug4l4cm2hXJvTo28ZtoFq3zA3yi', // hashed "password"
+        password:'123456', // hashed "password"
         role: 'admin'
     };
     
@@ -213,7 +209,7 @@ describe('loginUser function', () => {
     const mockUser = {
         _id: '123',
         email: 'user@example.com',
-        password: '$2b$10$ZfS/NjK0aCTpF4/lkL68Jux2D.Ug4l4cm2hXJvTo28ZtoFq3zA3yi', // hashed "password"
+        password: '123456', // hashed "password"
         role: 'user'
     };
 
