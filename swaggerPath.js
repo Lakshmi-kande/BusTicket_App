@@ -69,7 +69,7 @@
 
 /**
  * @swagger
- * /api/busesList:
+ * /api/buses:
  *   get:
  *     summary: Get all bus list
  *     description: Returns a list of all available buses.
@@ -88,7 +88,7 @@
 
 /**
  * @swagger
- * /api/busesList:
+ * /api/buses:
  *   post:
  *     summary: Create a new bus details
  *     description: Create a new bus record with the given details
@@ -162,7 +162,7 @@
 /**
  * @swagger
  *
- * /api/busesList/{id}:
+ * /api/buses/{id}:
  *   get:
  *     summary: Get bus details by Id
  *     tags: [Buses]
@@ -183,7 +183,7 @@
 
 /**
  * @swagger
- * /api/busesList/{id}:
+ * /api/buses/{id}:
  *   put:
  *     summary: Update bus details
  *     description: Update the details of an existing bus
@@ -228,7 +228,7 @@
 /**
  * @swagger
  *
- * /api/busesList/{id}:
+ * /api/buses/{id}:
  *   delete:
  *     summary: Delete bus details
  *     description: Delete bus details based on ID

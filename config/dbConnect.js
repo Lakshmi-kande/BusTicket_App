@@ -6,7 +6,8 @@ const connectDb = async() => {
             useUnifiedTopology: true,  
         });
         const message = `Database connected: ${connect.connection.host} ${connect.connection.name}`;
-        console.log(message);
+        // console.log(message);
+        return (message);
     } catch(err) {
         return (err);
     }

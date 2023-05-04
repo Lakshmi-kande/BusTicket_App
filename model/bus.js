@@ -25,6 +25,8 @@ const busSchema = mongoose.Schema({
         type: String, 
         required: true
     },
+},{
+    timestamps: true,
 });
 
 const bus = mongoose.model('bus', busSchema);

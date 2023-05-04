@@ -13,7 +13,7 @@ const app = express();
 const port = process.env.PORT || 5001;
 
 app.use(express.json());
-app.use('/api/busesList', require('./routes/busRoutes'));
+app.use('/api/buses', require('./routes/busRoutes'));
 app.use('/api/users', require('./routes/userRoutes'));
 app.use(errorHandler);
 
@@ -42,3 +42,4 @@ app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocs));
 app.listen(port, () => {
     console.log(`server running on port ${port}`);
 });
+module.exports = app;

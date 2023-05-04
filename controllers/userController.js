@@ -7,13 +7,13 @@ const { constants } = require('../constants');
 // route POST/api/users/register
 // access public
 const registerUser = asyncHandler(async(req,res)=>{
-    const {name, email, password, mobile, gender, role} = req.body;
+    const {name, email, password, mobile, gender} = req.body;
     if(!name || !email || !password || !mobile || !gender){
-        return res.status(constants.VALIDATION_ERROR).json({ message: 'All feilds are mandatory' });
+        return res.status(constants.VALIDATION_ERROR).json({ message: 'All fields are mandatory' });
     }
     const userAvailable = await user.findOne({ email });
     if (userAvailable){
-        return res.status(constants.VALIDATION_ERROR).json({ message: 'you already registered' });
+        return res.status(constants.VALIDATION_ERROR).json({ message: 'You are already registered' });
     }
     // Encrypt password
     const salt = await bcrypt.genSalt(10);
@@ -26,7 +26,6 @@ const registerUser = asyncHandler(async(req,res)=>{
         password: hashedPassword,
         mobile,
         gender,
-        role
     });
 
     res.status(constants.SUCCESSFULL_POST).json(newUser);
@@ -58,12 +57,12 @@ const loginUser = asyncHandler(async (req, res) => {
     if (User.role === 'admin') {
         // Admin actions
         res.status(constants.SUCCESSFULL_REQUEST).json({ message: 'Login successful - Admin' });
-    } else {
+    } 
+    else {
     // Normal user actions
         res.status(constants.SUCCESSFULL_REQUEST).json({ message: 'Login successful - Normal user' });
     }
 });
-
 
 
 module.exports ={registerUser, loginUser};
