@@ -50,7 +50,7 @@ describe('registerUser', () => {
         expect(res.json).toHaveBeenCalledWith(expectedUser);
     });
 
-    test('should return a validation error if any field is missing', async () => {
+    test('should return a validation error if any field is missing on user registering process', async () => {
         const req = {
             body: {
                 name: 'John Doe',
@@ -105,15 +105,18 @@ describe('loginUser function', () => {
         jest.clearAllMocks();
     });
 
-    test('should return 400 if email or password is missing', async () => {
-        const req = { body: {}};
+    test('should return 400 if email or password is missing on user login process', async () => {
+        const req = { 
+            body: {
+                email: 'test@example.com'
+        }};
         const res = {
             status: jest.fn().mockReturnThis(),
             json: jest.fn()
         };
         
         await loginUser(req, res);
-        
+
         expect(res.status).toHaveBeenCalledWith(constants.VALIDATION_ERROR);
         expect(res.json).toHaveBeenCalledWith({ message: 'All fields are mandatory!' });
     });
@@ -136,10 +139,10 @@ describe('loginUser function', () => {
     expect(user.findOne).toHaveBeenCalledWith({ email: req.body.email });
     expect(res.status).toHaveBeenCalledWith(constants.UNATHORIZED);
     expect(res.json).toHaveBeenCalledWith({ message: 'Invalid email or password' });
-});
+    });
 
 
-    test('should return 401 if password is incorrect', async () => {
+    test('should return 401 if password is incorrect from user', async () => {
         const req = {
             body: {
             email: 'test@example.com',
@@ -165,9 +168,9 @@ describe('loginUser function', () => {
     expect(bcrypt.compare).toHaveBeenCalledWith(req.body.password, mockUser.password);
     expect(res.status).toHaveBeenCalledWith(constants.UNATHORIZED);
     expect(res.json).toHaveBeenCalledWith({ message: 'Invalid email or password' });
-  });
+    });
 
-    test('should return 200 with success message for admin user', async () => {
+    test('should return 200 with successfully login message for admin user', async () => {
         const req = {
             body: {
             email: 'admin@example.com',
@@ -194,9 +197,9 @@ describe('loginUser function', () => {
     expect(bcrypt.compare).toHaveBeenCalledWith(req.body.password, mockUser.password);
     expect(res.status).toHaveBeenCalledWith(constants.SUCCESSFULL_REQUEST);
     expect(res.json).toHaveBeenCalledWith({ message: 'Login successful - Admin' });
-});
+    });
 
-    test('should return 200 with success message for normal user', async () => {
+    test('should return 200 with successfully login message for normal user', async () => {
         const req = {
             body: {
             email: 'user@example.com',
