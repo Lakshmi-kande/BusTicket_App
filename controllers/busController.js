@@ -24,7 +24,7 @@ const createBusDetails = asyncHandler(async (req, res) => {
     } = req.body;
 
     if ( !busNum || !busType || !startCity || !destination || !totalSeats || !availableSeats) {
-        throw new Error(constants.VALIDATION_ERROR);
+        res.status(constants.VALIDATION_ERROR);
     }
 
     const bus = new busDetails({
@@ -49,7 +49,7 @@ const getBusDetails = asyncHandler(async (req, res) => {
     const bus = await busDetails.findById(req.params.id);
 
     if (!bus) {
-        throw new Error(constants.NOT_FOUND);
+        res.status(constants.NOT_FOUND);
     }
 
     res.status(constants.SUCCESSFULL_REQUEST).json(bus);
@@ -62,7 +62,7 @@ const updateBusDetails = asyncHandler(async (req, res) => {
     const bus = await busDetails.findById(req.params.id);
 
     if (!bus) {
-        throw new Error(constants.NOT_FOUND);
+        res.status(constants.NOT_FOUND);
     }
 
     const updatedBusDetails = await busDetails.findByIdAndUpdate(
