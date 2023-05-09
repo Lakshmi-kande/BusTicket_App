@@ -27,3 +27,9 @@ Users can signUp and logIn as either an admin or a regular user. Both types of u
 - MongoDB
 - Mongoose
 - Swagger UI Express
+
+### Unit Testing and Installing Jest 
+##### Installing Jest:
+`npm install --save-dev jest`
+-  Unit tests are written in separate files with the extension .`test.js`.
+- To run the unit tests `npm test`
