@@ -1,98 +1,156 @@
+const request = require('supertest');
+const app = require('../index');
+const mongoose = require('mongoose');
 const busDetails = require('../model/bus');
-const { constants } = require('../constants');
+require('dotenv').config();
 
-const {
-  getAllBusList,
-  createBusDetails,
-  getBusDetails,
-  updateBusDetails,
-  deleteBusDetails
-} = require('../controllers/busController');
+let db;
 
-jest.mock('../model/bus');
-
-describe('getAllBusList', () => {
-  test('should return all buses list on successful api call', async () => {
-    const req = {};
-      const res = {
-        status: jest.fn().mockReturnThis(),json: jest.fn()
-      };
-      const busList = [
-        { busNum: '1', busType: 'AC', startCity: 'Mumbai', destination: 'Pune', totalSeats: 40, availableSeats: 20 },
-        { busNum: '2', busType: 'Non-AC', startCity: 'Pune', destination: 'Mumbai', totalSeats: 50, availableSeats: 30 }
-      ];
-      busDetails.find.mockResolvedValue(busList);
-
-      await getAllBusList(req, res);
-
-      expect(res.status).toHaveBeenCalledWith(constants.SUCCESSFULL_REQUEST);
-      expect(res.json).toHaveBeenCalledWith(busList);
+beforeAll(async () => {
+  db = await mongoose.connect(process.env.connect_URL, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    useCreateIndex: true,
+    useFindAndModify: false
   });
+});
+
+afterAll(async () => {
+  await db.disconnect();
+  await mongoose.connection.close();
+});
+
+
+describe('GET /api/buses', () => {
+  it('should get all buses list', async () => {
+    const res = await request(app).get('/api/buses');
+    expect(res.statusCode).toBe(200);
+    expect(Array.isArray(res.body)).toBeTruthy();
+  }, 10000);
 });
 
 
 
-describe('createBusDetails', () => {
-  test('should return a new bus details object', async () => {
-    const mockBusDetails = {
-      busNum: '123',
-      busType: 'AC',
-      startCity: 'Mumbai',
-      destination: 'Pune',
-      totalSeats: 50,
-      availableSeats: 50,
-      busId: 'bus-123'
-    };
-
-    busDetails.mockResolvedValueOnce(mockBusDetails);
-
-    const req = {
-      body: {
-        busNum: '123',
+describe('POST /api/buses', () => {
+  
+  it('should create a new bus details', async () => {
+    const res = await request(app)
+      .post('/api/buses')
+      .send({
+        busNum: '1234',
         busType: 'AC',
         startCity: 'Mumbai',
         destination: 'Pune',
-        totalSeats: 50,
-        availableSeats: 50,
-        id: 'bus-123'
-      }
-    };
-    const res = {
-      status: jest.fn().mockReturnThis(),json: jest.fn()
-    };
+        totalSeats: '50',
+        availableSeats: '50'
+      })
+      expect(res.statusCode).toBe(201);
 
-    await createBusDetails(req, res);
+    expect(res.body).toHaveProperty('_id');
+    expect(res.body.busNum).toBe('1234');
+    expect(res.body.busType).toBe('AC');
+    expect(res.body.startCity).toBe('Mumbai');
+    expect(res.body.destination).toBe('Pune');
+    expect(res.body.totalSeats).toBe('50');
+    expect(res.body.availableSeats).toBe('50');
+  },10000);
 
-    expect(busDetails).toHaveBeenCalledTimes(1);
-    expect(busDetails).toHaveBeenCalledWith({
-      busNum: '123',
+  it('should return validation error if required fields are missing', async () => {
+    const res = await request(app)
+      .post('/api/buses')
+      .send({})
+      .expect(400);
+
+    expect(res.body).toEqual({ message: 'All fields are required' });
+  });
+});
+
+
+describe('GET /api/buses/:id', () => {
+  it('should get a specific bus with the provided Id ', async () => {
+    const bus = new busDetails({
+      busNum: '4321',
       busType: 'AC',
       startCity: 'Mumbai',
       destination: 'Pune',
-      totalSeats: 50,
-      availableSeats: 50,
-      busId: 'bus-123'
+      totalSeats: '50',
+      availableSeats: '50'
     });
+    await bus.save();
 
-    expect(mockBusDetails.save).toHaveBeenCalledTimes(1);
-    expect(res.status).toHaveBeenCalledWith(constants.SUCCESSFULL_POST);
-    expect(res.json).toHaveBeenCalledWith(mockBusDetails);
+    const res = await request(app)
+      .get(`/api/buses/${bus._id}`)
+      .send({
+        busNum: '4321',
+        busType: 'AC',
+        startCity: 'Mumbai',
+        destination: 'Pune',
+        totalSeats: '50',
+        availableSeats: '50'
+      });
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body.busNum).toBe('4321');
+    expect(res.body.busType).toBe('AC');
   });
+});
 
-  it('should throw an error if required fields are missing', async () => {
-    const req = {
-      body: {}
-    };
-    const res = {
-      status: jest.fn().mockReturnThis(),
-      json: jest.fn()
-    };
 
-    await expect(createBusDetails(req, res)).rejects.toThrow(constants.VALIDATION_ERROR);
+describe('PUT /api/buses/:id', () => {
+  it('should update a specific bus with the provided Id', async () => {
+    const bus = new busDetails({
+      busNum: '1234',
+      busType: 'Non-AC',
+      startCity: 'Mumbai',
+      destination: 'Pune',
+      totalSeats: '50',
+      availableSeats: '50'
+    });
+    await bus.save();
+
+    const res = await request(app)
+      .put(`/api/buses/${bus._id}`)
+      .send({
+        busNum: '4321',
+        busType: 'AC',
+        startCity: 'Mumbai',
+        destination: 'Pune',
+        totalSeats: '50',
+        availableSeats: '50'
+      });
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body.busNum).toBe('4321');
+    expect(res.body.busType).toBe('AC');
   });
 });
 
 
 
+describe('DELETE /api/buses/:id', () => {
+  it('should delete a bus with specific bus with the provided id', async () => {
+    const bus = new busDetails({
+      busNum: '1234',
+      busType: 'Non-AC',
+      startCity: 'Mumbai',
+      destination: 'Pune',
+      totalSeats: '50',
+      availableSeats: '50'
+    });
+    await bus.save();
 
+    const res = await request(app)
+      .delete(`/api/buses/${bus._id}`)
+      .send({
+        busNum: '4321',
+        busType: 'AC',
+        startCity: 'Mumbai',
+        destination: 'Pune',
+        totalSeats: '50',
+        availableSeats: '50'
+      });
 
+      expect(res.statusCode).toBe(200);
+      expect(res.body.message).toBe('deleted successfully');
+  },10000);
+});
