@@ -35,18 +35,10 @@ describe('Bus API', () => {
   
   describe('POST /api/buses', () => {
     it('should create a new bus', async () => {
-      const busData = {
-        busNum: '4321',
-        busType: 'A C',
-        startCity: 'HYD',
-        destination: 'Pune',
-        totalSeats: 50,
-        availableSeats: 50,
-      };
       const mockedBusSave = jest.spyOn(busDetails.prototype, 'save');
       mockedBusSave.mockResolvedValue(busData);
 
-      const response = await request(busData)
+      const response = await request(app)
         .post('/api/buses')
         .send(busData);
 
