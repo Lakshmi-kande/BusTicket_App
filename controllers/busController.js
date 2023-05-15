@@ -36,10 +36,9 @@ const createBusDetails = asyncHandler(async (req, res) => {
         availableSeats,
         busId: req.body.id
     });
-    // console.log(bus.save)
-    await bus.save();
+    const result = await bus.save();
 
-    res.status(constants.SUCCESSFULL_POST).json(bus);
+    res.status(constants.SUCCESSFULL_POST).json(result);
 });
 
 //@desc Get bus details
