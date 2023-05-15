@@ -20,7 +20,7 @@ describe('Bus API', () => {
   });
 
   describe('GET /api/buses', () => {
-    it('should return all buses', async () => {
+    it('should return all buses details', async () => {
       const mockedBusDetails = jest.spyOn(busDetails, 'find');
       mockedBusDetails.mockResolvedValue([busData]);
 
@@ -34,7 +34,7 @@ describe('Bus API', () => {
 
   
   describe('POST /api/buses', () => {
-    it('should create a new bus', async () => {
+    it('should create a new bus details', async () => {
       const mockedBusSave = jest.spyOn(busDetails.prototype, 'save');
       mockedBusSave.mockResolvedValue(busData);
 
@@ -93,15 +93,19 @@ describe('Bus API', () => {
 
   describe('DELETE /api/buses/:id', () => {
     it('should delete a specific bus with the provided Id', async () => {
-      const mockedBusDetails = jest.spyOn(busDetails, 'findByIdAndDelete');
-      mockedBusDetails.mockResolvedValue(busData);
+      const mockedBus = {
+        deleteOne: jest.fn().mockResolvedValue({}),
+      };
+
+      busDetails.findById.mockResolvedValue(mockedBus);
 
       const response = await request(app).delete('/api/buses/1');
 
       expect(response.status).toBe(constants.SUCCESSFULL_REQUEST);
-      expect(response.body).toEqual(busData);
-      expect(mockedBusDetails).toHaveBeenCalledWith('1');
-      expect(mockedBusDetails).toHaveBeenCalledTimes(1);
+      expect(response.body).toEqual({ message: 'deleted successfully' });
+      expect(busDetails.findById).toHaveBeenCalledWith('1');
+      expect(mockedBus.deleteOne).toHaveBeenCalledTimes(1);
+      expect(mockedBus.deleteOne).toHaveBeenCalledWith({ _id: '1' });
     });
   });
 
