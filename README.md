@@ -10,14 +10,20 @@ Users can signUp and logIn as either an admin or a regular user. Both types of u
 - Run `npm start` to start the server.
 ## Endpoints
 ### Bus Routes
-`GET /api/busesList` - get a list of all buses
-`GET /api/busesList/:id` - get details of a specific bus
-`POST /api/busesList` - create a new bus (admin only)
-`PUT /api/busesList/:id` - update bus details (admin only)
-`DELETE /api/busesList/:id` - delete a bus (admin only)
+`GET /api/buses` - get a list of all buses
+
+`GET /api/buses/:id` - get details of a specific bus
+
+`POST /api/buses` - create a new bus (admin only)
+
+`PUT /api/buses/:id` - update bus details (admin only)
+
+`DELETE /api/buses/:id` - delete a bus (admin only)
 ### User Routes
 `POST /api/users/register` - register a new user
+
 `POST /api/users/login` - login an existing user
+
 `GET /api/users/profile` - get the user profile (authenticated user only)
 ### Swagger Documentation
 `GET /api-docs` - view Swagger documentation for the API
